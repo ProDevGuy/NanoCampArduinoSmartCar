@@ -7,6 +7,9 @@
 #include "QTRSensors.h"
 
 
+
+#define DistancesensorPin A5
+
 //Unused Variables. TODO: Delete them
 double angle_rad = 0.01745329251;
 double angle_deg = 180.0/PI;
@@ -15,28 +18,31 @@ double angle_deg = 180.0/PI;
 
 //Speed Variables
 
-int fast = 200;
+int fast = 100;
 int medium = 100;
 int slow = 50;
 
-//Setup Variables
+//Setup Variables\
+
+
+
 float volts;
 float distance;
 
 
-//Distance Sensor Pin
-const byte DistancesensorPin = A0;
+
+
 
 // Window size of the median filter (odd number, 1 = no filtering)
 const byte medianFilterWindowSize = 5;
 
 //Object instance of motors and sensors
-SharpDistSensor sensor(DistancesensorPin, medianFilterWindowSize);\
+SharpDistSensor sensor(DistancesensorPin, medianFilterWindowSize);
 
 AF_DCMotor left_motor(3, MOTOR12_1KHZ);
 AF_DCMotor right_motor(4, MOTOR12_1KHZ);
 
-QTRSensorsAnalog qtra((unsigned char[]) {0, 1, 2, 3, 4},5, 4, QTR_NO_EMITTER_PIN);
+QTRSensorsAnalog qtra((unsigned char[]) {1, 2, 3, 4},5, 4, QTR_NO_EMITTER_PIN);
 
 
 
@@ -54,6 +60,7 @@ void setup(){
          qtra.calibrate();
     }
     Serial.print("Calibration Done");
+    Serial.println(".");
 }
 
 
@@ -71,30 +78,55 @@ void loop(){
 
     // Wait some time
     delay(50);
+    CheckSensorValuesAndReact();
+    
+    /*
+    if(distance > 50 || distance < 7){
+
+      //Distance = 0
+      left_motor.run(-1);
+      right_motor.run(-1);
+
+      delay(1000);
+      left_motor.run(1);
+      right_motor.run(1);
+      right_motor.setSpeed(medium);
+      left_motor.setSpeed(slow);
 
 
-    //Motors default to be on
-    left_motor.run(1);
-    right_motor.run(1);
-    //Motors default to be slow
-    left_motor.setSpeed(slow);
-    right_motor.setSpeed(slow);
+    }*/
+
+    _loop();
+}
+
+void CheckSensorValuesAndReact(){
+
+    qtra.read(sensorValues);
+
+
 
     if((sensorValues[2]) > (ReflectanceThreshhold(2))){
         if((sensorValues[4]) > (ReflectanceThreshhold(4))){
-            
+            left_motor.run(1);
+            right_motor.run(1);
             left_motor.setSpeed(fast);
             right_motor.setSpeed(fast);
         }else{
+            left_motor.run(1);
+            right_motor.run(1);
             left_motor.setSpeed(medium);
             right_motor.setSpeed(medium);
         }
     }else{
         if((sensorValues[3]) > (ReflectanceThreshhold(3))){
+          left_motor.run(1);
+          right_motor.run(1);
           right_motor.setSpeed(medium);
           left_motor.setSpeed(slow);
         }
-        if ((sensorValues[1]) > ReflectanceThreshhold(1)){
+        else if ((sensorValues[1]) > ReflectanceThreshhold(1)){
+          left_motor.run(1);
+          right_motor.run(1);
           right_motor.setSpeed(slow);
           left_motor.setSpeed(medium);
 
@@ -113,27 +145,14 @@ void loop(){
 
     }
 
-    if(distance > 50 || distance < 7){
 
-      //Distance = 0
-      left_motor.run(-1);
-      right_motor.run(-1);
-
-      delay(1000);
-      left_motor.run(1);
-      right_motor.run(1);
-      right_motor.setSpeed(medium);
-      left_motor.setSpeed(slow);
-
-
-    }
-
-    _loop();
 }
 
-int ReflectanceThreshhold(int a){
 
-  2*(qtra.calibratedMaximumOn[a] - qtra.calibratedMinimumOn[a])/3 + qtra.calibratedMinimumOn[a];
+float ReflectanceThreshhold(int a){
+
+  float b = 2*(qtra.calibratedMaximumOn[a] - qtra.calibratedMinimumOn[a])/3 + qtra.calibratedMinimumOn[a];
+  return b;
 
 }
 
