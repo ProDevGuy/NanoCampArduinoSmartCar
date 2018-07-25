@@ -7,39 +7,44 @@
 #include "QTRSensors.h"
 
 
+//Unused Variables. TODO: Delete them
+double angle_rad = 0.01745329251;
+double angle_deg = 180.0/PI;
 
 
 
+//Speed Variables
 
 int fast = 200;
 int medium = 100;
 int slow = 50;
 
+//Setup Variables
+float volts;
+float distance;
 
 
-// Analog pin to which the sensor is connected
-const byte sensorPin = A0;
+//Distance Sensor Pin
+const byte DistancesensorPin = A0;
 
 // Window size of the median filter (odd number, 1 = no filtering)
 const byte medianFilterWindowSize = 5;
 
-// Create an object instance of the SharpDistSensor class
-SharpDistSensor sensor(sensorPin, medianFilterWindowSize);
-
-const double distanceMultipler = 0.0114285714;
-
-float volts;
-float distance;
-
-double angle_rad = 0.01745329251;
-double angle_deg = 180.0/PI;
-
-QTRSensorsAnalog qtra((unsigned char[]) {0, 1, 2, 3, 4},5, 4, QTR_NO_EMITTER_PIN);
-
-unsigned int sensorValues[5];
+//Object instance of motors and sensors
+SharpDistSensor sensor(DistancesensorPin, medianFilterWindowSize);\
 
 AF_DCMotor left_motor(3, MOTOR12_1KHZ);
 AF_DCMotor right_motor(4, MOTOR12_1KHZ);
+
+QTRSensorsAnalog qtra((unsigned char[]) {0, 1, 2, 3, 4},5, 4, QTR_NO_EMITTER_PIN);
+
+
+
+//Arrays
+
+unsigned int sensorValues[5];
+
+
 
 
 void setup(){
@@ -51,10 +56,15 @@ void setup(){
     Serial.print("Calibration Done");
 }
 
+
+
+
+
+
 void loop(){
 
-    //unsigned int distance = sensor.getDist();
-    volts = analogRead(sensorPin)*0.0048828125;
+    //Gets distance from sensor
+    volts = analogRead(DistancesensorPin)*0.0048828125;
     distance = 13*pow(volts,-1);;
     // Print distance to Serial
     Serial.println(distance);
@@ -62,9 +72,13 @@ void loop(){
     // Wait some time
     delay(50);
 
+
+    //Motors default to be on
     left_motor.run(1);
     right_motor.run(1);
-
+    //Motors default to be slow
+    left_motor.setSpeed(slow);
+    right_motor.setSpeed(slow);
 
     if((sensorValues[2]) > (ReflectanceThreshhold(2))){
         if((sensorValues[4]) > (ReflectanceThreshhold(4))){
