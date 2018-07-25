@@ -10,6 +10,9 @@
 
 #define DistancesensorPin A5
 
+
+
+
 //Unused Variables. TODO: Delete them
 double angle_rad = 0.01745329251;
 double angle_deg = 180.0/PI;
@@ -18,11 +21,11 @@ double angle_deg = 180.0/PI;
 
 //Speed Variables
 
-int fast = 100;
-int medium = 100;
-int slow = 25;
+const int fast = 110;
+const int medium = 100;
+const int slow = 40;
 
-//Setup Variables\
+//Setup Variables
 
 
 
@@ -67,7 +70,7 @@ void setup(){
 
 
 
-
+  
 void loop(){
 
     //Gets distance from sensor
@@ -78,76 +81,77 @@ void loop(){
 
     // Wait some time
     delay(50);
-    CheckSensorValuesAndReact();
     
-    /*
-    if(distance > 50 || distance < 7){
+    
+    
+    if(distance < 7){
 
       //Distance = 0
-      left_motor.run(-1);
-      right_motor.run(-1);
+      left_motor.run(2);
+      right_motor.run(2);
+      left_motor.setSpeed(fast);
+      right_motor.setSpeed(fast);
 
-      delay(1000);
+      delay(250);
       left_motor.run(1);
       right_motor.run(1);
       right_motor.setSpeed(medium);
       left_motor.setSpeed(slow);
+      delay(500);
+
+    }
+
+    else
+    {
+
+      CheckSensorValuesAndMove();
 
 
-    }*/
+    }
 
     _loop();
 }
 
-void CheckSensorValuesAndReact(){
+void CheckSensorValuesAndMove(){
 
     qtra.read(sensorValues);
 
 
 
-    if((sensorValues[2]) > (ReflectanceThreshhold(2))){
-        if((sensorValues[4]) > (ReflectanceThreshhold(4))){
+    if((sensorValues[2]) > (ReflectanceThreshhold(2)))
+    {
             left_motor.run(1);
             right_motor.run(1);
             left_motor.setSpeed(fast);
             right_motor.setSpeed(fast);
-        }else{
-            left_motor.run(1);
-            right_motor.run(1);
-            left_motor.setSpeed(medium);
-            right_motor.setSpeed(medium);
-        }
-    }else{
-        if((sensorValues[3]) > (ReflectanceThreshhold(3))){
+    }
+    else if(sensorValues[3] > ReflectanceThreshhold(3) || sensorValues[0] > ReflectanceThreshhold(0))
+    {
           left_motor.run(1);
           right_motor.run(1);
           right_motor.setSpeed(medium);
           left_motor.setSpeed(slow);
-        }
-        else if ((sensorValues[1]) > ReflectanceThreshhold(1)){
+    }
+    else if (sensorValues[1] > ReflectanceThreshhold(1) || sensorValues[4] > ReflectanceThreshhold(4))
+    {
           left_motor.run(1);
           right_motor.run(1);
           right_motor.setSpeed(slow);
           left_motor.setSpeed(medium);
-
-
-        }
-        else{
-          left_motor.run(1);
-          right_motor.run(1);
-          right_motor.setSpeed(0);
-          left_motor.setSpeed(slow);
-
-
-        }
-
-
-
+    } 
+    else 
+    {
+          left_motor.run(2);
+          right_motor.run(2);
+          right_motor.setSpeed(70);
+          left_motor.setSpeed(70);
     }
 
+  }
 
-}
 
+
+ 
 
 float ReflectanceThreshhold(int a){
 
@@ -161,5 +165,4 @@ void _delay(float seconds){
     while(millis() < endTime)_loop();
 }
 
-void _loop(){
-}
+void _loop(){}
