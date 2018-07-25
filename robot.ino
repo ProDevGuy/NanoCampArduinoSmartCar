@@ -20,7 +20,7 @@ double angle_deg = 180.0/PI;
 
 int fast = 100;
 int medium = 100;
-int slow = 50;
+int slow = 25;
 
 //Setup Variables\
 
@@ -133,9 +133,9 @@ void CheckSensorValuesAndReact(){
 
         }
         else{
-          left_motor.run(-1);
-          right_motor.run(-1);
-          right_motor.setSpeed(slow);
+          left_motor.run(1);
+          right_motor.run(1);
+          right_motor.setSpeed(0);
           left_motor.setSpeed(slow);
 
 
