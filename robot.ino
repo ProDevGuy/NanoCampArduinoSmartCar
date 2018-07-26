@@ -1,5 +1,4 @@
 #include <MedianFilter.h>
-#include <SharpDistSensor.h>
 #include <Arduino.h>
 #include <Wire.h>
 #include <SoftwareSerial.h>
@@ -8,7 +7,7 @@
 
 
 
-#define DistancesensorPin A5
+
 
 
 
@@ -30,18 +29,13 @@ const int slow = 50;
 
 
 
-float volts;
-float distance;
-
-
-
 
 
 // Window size of the median filter (odd number, 1 = no filtering)
-const byte medianFilterWindowSize = 5;
+//const byte medianFilterWindowSize = 5;
 
 //Object instance of motors and sensors
-SharpDistSensor sensor(DistancesensorPin, medianFilterWindowSize);
+//SharpDistSensor sensor(DistancesensorPin, medianFilterWindowSize);
 
 AF_DCMotor left_motor(3, MOTOR34_64KHZ);
 AF_DCMotor right_motor(4, MOTOR34_64KHZ);
@@ -74,46 +68,7 @@ void setup(){
   
 void loop(){
 
-    //Gets distance from sensor
-    volts = analogRead(DistancesensorPin)*0.0048828125;
-    distance = 13*pow(volts,-1);;
-    // Print distance to Serial
-    Serial.println(distance);
-
-    // Wait some time
-    delay(50);
     
-    
-    if(distance < 7){
-
-      //Distance = 0
-      left_motor.run(2);
-      right_motor.run(2);
-      left_motor.setSpeed(fast);
-      right_motor.setSpeed(fast);
-
-      delay(500);
-      left_motor.run(1);
-      right_motor.run(1);
-      right_motor.setSpeed(medium);
-      left_motor.setSpeed(slow);
-      delay(500);
-
-    }
-
-    else
-    {
-
-      CheckSensorValuesAndMove();
-
-
-    }
-
-
-    _loop();
-}
-
-void CheckSensorValuesAndMove(){
 
     qtra.read(sensorValues);
     // 2 = front center, 3 = front left, 0 = back left, 1 = front right, 4 = back right
@@ -125,7 +80,7 @@ void CheckSensorValuesAndMove(){
         left_motor.setSpeed(medium);
         right_motor.setSpeed(slow);
 
-        
+        return;
 
 
 
@@ -136,7 +91,7 @@ void CheckSensorValuesAndMove(){
         left_motor.setSpeed(medium);
         right_motor.setSpeed(slow);
 
-        
+        return;
 
 
 
@@ -147,6 +102,7 @@ void CheckSensorValuesAndMove(){
             right_motor.run(1);
             left_motor.setSpeed(fast);
             right_motor.setSpeed(fast);
+            return;
     }
     else if(sensorValues[3] > ReflectanceThreshhold(3) || sensorValues[4] > ReflectanceThreshhold(4))
     {
@@ -154,6 +110,7 @@ void CheckSensorValuesAndMove(){
           right_motor.run(1);
           right_motor.setSpeed(medium);
           left_motor.setSpeed(slow);
+          return;
     }
     else if (sensorValues[1] > ReflectanceThreshhold(1) || sensorValues[0] > ReflectanceThreshhold(0))
     {
@@ -161,6 +118,7 @@ void CheckSensorValuesAndMove(){
           right_motor.run(1);
           right_motor.setSpeed(slow);
           left_motor.setSpeed(medium);
+          return;
     } 
     else 
     {
@@ -168,11 +126,17 @@ void CheckSensorValuesAndMove(){
           right_motor.run(2);
           right_motor.setSpeed(back);
           left_motor.setSpeed(back);
+          return;
     }
 
 
+    
 
+
+    _loop();
 }
+
+
 
  
 
