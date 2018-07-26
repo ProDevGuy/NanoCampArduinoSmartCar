@@ -1,4 +1,6 @@
-#include <MedianFilter.h>
+
+
+//#include <MedianFilter.h>
 #include <Arduino.h>
 #include <Wire.h>
 #include <SoftwareSerial.h>
@@ -73,10 +75,10 @@ void loop(){
     qtra.read(sensorValues);
     // 2 = front center, 3 = front left, 0 = back left, 1 = front right, 4 = back right
 
-
+    //front left on black and front centor sensor on white turn left 
     if(sensorValues[3] > ReflectanceThreshhold(3) && sensorValues[2] < ReflectanceThreshhold(2)){
-        left_motor.run(2);
-        right_motor.run(2);
+        left_motor.run(1);
+        right_motor.run(1);
         left_motor.setSpeed(medium);
         right_motor.setSpeed(slow);
 
@@ -85,11 +87,12 @@ void loop(){
 
 
     }
+    //back left on black and back right on white turn right
     else if(sensorValues[0] > ReflectanceThreshhold(0) && sensorValues[4] < ReflectanceThreshhold(4)){
         left_motor.run(2);
         right_motor.run(2);
-        left_motor.setSpeed(medium);
-        right_motor.setSpeed(slow);
+        left_motor.setSpeed(slow);
+        right_motor.setSpeed(medium);
 
         return;
 
