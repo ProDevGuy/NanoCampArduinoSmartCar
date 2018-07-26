@@ -21,10 +21,10 @@ double angle_deg = 180.0/PI;
 
 //Speed Variables
 
-const int fast = 100;
-const int medium = 90;
-const int back = 70;
-const int slow = 40;
+const int fast = 110;
+const int medium = 100;
+const int back = 80;
+const int slow = 50;
 
 //Setup Variables
 
@@ -83,7 +83,7 @@ void loop(){
     // Wait some time
     delay(50);
     
-    /*
+    
     if(distance < 7){
 
       //Distance = 0
@@ -92,7 +92,7 @@ void loop(){
       left_motor.setSpeed(fast);
       right_motor.setSpeed(fast);
 
-      delay(250);
+      delay(500);
       left_motor.run(1);
       right_motor.run(1);
       right_motor.setSpeed(medium);
@@ -108,8 +108,7 @@ void loop(){
 
 
     }
-    */
-    CheckSensorValuesAndMove();
+
 
     _loop();
 }
@@ -120,7 +119,6 @@ void CheckSensorValuesAndMove(){
     // 2 = front center, 3 = front left, 0 = back left, 1 = front right, 4 = back right
 
 
-    
     if(sensorValues[3] > ReflectanceThreshhold(3) && sensorValues[2] < ReflectanceThreshhold(2)){
         left_motor.run(2);
         right_motor.run(2);
@@ -172,9 +170,9 @@ void CheckSensorValuesAndMove(){
           left_motor.setSpeed(back);
     }
 
-  }
 
 
+}
 
  
 
